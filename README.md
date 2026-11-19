@@ -1,79 +1,54 @@
-import os
+# Personal Expense Tracker
 
-FILE_NAME = "expenses.txt"
+A beginner-friendly Python console app for recording expenses, organizing them into categories, tracking monthly budgets, and viewing reports. It uses only Python's standard library.
 
-categories = ["Food", "Travel", "Shopping", "Bills", "Other"]
+## Project files
 
-def add_expense():
-    date = input("Enter date (DD-MM-YYYY): ")
-    
-    print("\nSelect Category:")
-    for i, cat in enumerate(categories, 1):
-        print(f"{i}. {cat}")
-    
-    choice = int(input("Enter category number: "))
-    
-    if choice < 1 or choice > len(categories):
-        print("Invalid category!\n")
-        return
-    
-    category = categories[choice - 1]
-    amount = float(input("Enter amount: "))
+```text
+expense-tracker/
+├── main.py          # menu, input prompts, tracker class, reports
+├── data.json        # created automatically when you save the first change
+├── test_tracker.py  # automated checks
+└── README.md
+```
 
-    with open(FILE_NAME, "a") as file:
-        file.write(f"{date},{category},{amount}\n")
+## Run it in VS Code
 
-    print("Expense added successfully!\n")
+1. Install Python 3.10 or newer and open this folder in VS Code.
+2. Open `main.py`. If VS Code prompts you, install the Microsoft Python extension and select your Python interpreter.
+3. Open **Terminal → New Terminal**.
+4. Run `python main.py` (on some Windows installations, use `py main.py`).
+5. Choose a menu number. The app creates `data.json` beside `main.py` and saves after each change. Keep that file to preserve your expenses.
 
+## Features
 
-def view_expense():
-    if not os.path.exists(FILE_NAME):
-        print("No expenses found.\n")
-        return
+- Add expenses with a name, amount, category, and date. Press Enter for today's date.
+- View, search, edit, and delete records. Delete asks for confirmation.
+- Set budgets by month and see spending, remaining budget, or amount over budget.
+- Daily, monthly, category, and all-time reports.
+- Checks amounts, dates, categories, menu choices, and required names.
+- Saves records and budgets in readable JSON.
 
-    print("\n--- All Expenses ---")
-    with open(FILE_NAME, "r") as file:
-        for line in file:
-            date, category, amount = line.strip().split(",")
-            print(f"Date: {date} | Category: {category} | Amount: ₹{amount}")
-    print()
+Dates use `YYYY-MM-DD`; budget and report months use `YYYY-MM`. Categories are Food, Travel, Bills, Shopping, Health, Entertainment, and Other. Edit prompts keep the existing value when you press Enter.
 
+## How the code is organized
 
-def total_expense():
-    if not os.path.exists(FILE_NAME):
-        print("No expenses found.\n")
-        return
+- `Expense` is a **dataclass**: one expense record with a name, amount, category, and date.
+- `ExpenseTracker` is a **class** that owns the list of expenses and a dictionary of monthly budgets. Its methods load, save, add, update, delete, and calculate totals.
+- `expenses` is a **list** because it holds any number of expense records. `budgets` is a **dictionary** because a month (such as `2026-10`) maps directly to its budget amount.
+- Small **functions** handle prompts, validation, displaying tables, and reports. The main loop prints the menu and calls the selected function.
+- `data.json` is plain text in JSON format. You can back it up by copying the file.
 
-    total = 0
-    with open(FILE_NAME, "r") as file:
-        for line in file:
-            _, _, amount = line.strip().split(",")
-            total += float(amount)
+## Run the checks
 
-    print(f"\nTotal Expense: ₹{total}\n")
+From this folder, run:
 
+```text
+python -m unittest -v
+```
 
-def menu():
-    while True:
-        print("===== Expense Tracker =====")
-        print("1. Add Expense")
-        print("2. View Expenses")
-        print("3. Total Expense")
-        print("4. Exit")
+The tests use temporary files, so they do not change your personal `data.json`.
 
-        choice = input("Enter your choice: ")
+## Reset your data
 
-        if choice == "1":
-            add_expense()
-        elif choice == "2":
-            view_expense()
-        elif choice == "3":
-            total_expense()
-        elif choice == "4":
-            print("Exiting...")
-            break
-        else:
-            print("Invalid choice!\n")
-
-
-menu()
+Exit the app and remove or rename `data.json`. The next run starts with an empty tracker. Make a backup first if you may want those records later.
